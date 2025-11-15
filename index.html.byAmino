@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مستكشف مشاعرك</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(to bottom right, #E6F2FF, #DFF6FF);
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .container {
+        background-color: #fff;
+        padding: 35px;
+        border-radius: 25px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        max-width: 550px;
+        width: 95%;
+        text-align: center;
+    }
+    h1 {
+        color: #2673CC;
+        margin-bottom: 20px;
+        font-size: 28px;
+    }
+    textarea {
+        width: 100%;
+        height: 140px;
+        padding: 15px;
+        border-radius: 15px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        resize: none;
+    }
+    button {
+        background-color: #3399FF;
+        color: white;
+        border: none;
+        padding: 14px 25px;
+        margin-top: 20px;
+        border-radius: 15px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    button:hover {
+        background-color: #2673CC;
+    }
+    #result {
+        margin-top: 25px;
+        text-align: right;
+        background-color: #F0F8FF;
+        padding: 20px;
+        border-radius: 15px;
+        min-height: 80px;
+        white-space: pre-line;
+        font-size: 16px;
+    }
+    footer {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>مستكشف مشاعرك</h1>
+    <textarea id="userInput" placeholder="اكتب شعورك أو يومك هنا..."></textarea>
+    <button onclick="analyze()">حلّل شعوري الآن</button>
+    <div id="result"></div>
+    <footer>أداة تحليل المشاعر بواسطة الذكاء الاصطناعي</footer>
+</div>
+
+<script>
+async function analyze(){
+    const input = document.getElementById("userInput").value.trim();
+    if(!input) {
+        alert("يرجى كتابة شعورك أولاً!");
+        return;
+    }
+
+    document.getElementById("result").innerText = "جارٍ التحليل... ⏳";
+
+    try {
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer YOUR_API_KEY"
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+                        role:"user",
+                        content: `اقرأ النص التالي وحلل المشاعر والسبب وقدم 3 نصائح عملية بطريقة مختصرة وسهلة القراءة باللغة العربية: ${input}`
+                    }
+                ]
+            })
+        });
+
+        const data = await response.json();
+        const resultText = data.choices[0].message.content;
+        document.getElementById("result").innerText = resultText;
+    } catch(error) {
+        console.error(error);
+        document.getElementById("result").innerText = "حدث خطأ أثناء التحليل. حاول مرة أخرى.";
+    }
+}
+</script>
+</body>
+</html>
